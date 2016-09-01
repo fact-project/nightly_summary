@@ -5,8 +5,9 @@ from argparse import ArgumentParser
 from sqlalchemy import create_engine
 import yaml
 import pandas as pd
-from plots import plot_runtype, plot_sources, plot_run_timeline
+from plots import plot_run_timeline, plot_qla
 from datetime import datetime, timedelta
+from qla import get_qla_data
 import os
 
 
@@ -61,21 +62,24 @@ def build_summary(outputfile, template_file, db, night=None, stylesheets=None):
     template = load_template(template_file)
 
     runs = read_run(night, db)
+    qla_data = get_qla_data(night, db)
 
     os.makedirs('build', exist_ok=True)
 
     plot_run_timeline(runs, 'build/runs.svg')
+    plot_qla(qla_data, 'build/qla.svg')
 
     md = template.render(
         night=night,
         run_plot='build/runs.svg',
+        qla_plot='build/qla.svg',
     )
 
     html = markdown.markdown(md, extensions=['markdown.extensions.tables'])
     document = HTML(string=html, base_url='.')
 
     outputfile = outputfile or 'fact_summary_{}.pdf'.format(night)
-    document.write_pdf(outputfile,  stylesheets=stylesheets)
+    document.write_pdf(outputfile, stylesheets=stylesheets)
 
 
 def main():

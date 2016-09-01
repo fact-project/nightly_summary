@@ -14,6 +14,9 @@
 
 
 ## QLA results
+<div align="center">
+<img src="{{ qla_plot }}" alt="" style="width:15cm; height:10cm;"/>
+</div>
 
 ## System status
 
